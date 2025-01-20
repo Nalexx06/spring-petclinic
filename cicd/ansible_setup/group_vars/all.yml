@@ -1,5 +1,4 @@
 ---
-java_version: applejdk-17
 jenkins_url: "http://localhost:8080"
 ansible_become_password: <password>
 

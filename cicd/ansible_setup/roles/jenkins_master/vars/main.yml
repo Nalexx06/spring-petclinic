@@ -1,4 +1,5 @@
 ---
-jenkins_dir: "/Users/moleksiienko/devopstest/jenkins"
+jenkins_dir: "/Users/moleksiienko/.jenkins"
 jenkins_agent_dir: "/Users/moleksiienko/jenkins-agent"
 jenkins_agent_secret: <jenkins-secret>
+jenkins_user: moleksiienko

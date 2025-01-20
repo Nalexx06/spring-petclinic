@@ -8,7 +8,20 @@
   shell: |
     nohup /opt/homebrew/opt/openjdk@21/bin/java -Dmail.smtp.starttls.enable=true -jar /opt/homebrew/opt/jenkins-lts/libexec/jenkins.war --httpListenAddress=127.0.0.1 --httpPort=8080 -Djenkins.install.runSetupWizard=false > /tmp/jenkins.log 2>&1 &
   become: true
-  become_user: moleksiienko
+  become_user: "{{ jenkins_user }}"
+  async: 60
+  poll: 0
+  ignore_errors: true
+
+- name: Import Jenkins pipelines
+  become_user: "{{ jenkins_user }}"
+  import_tasks: pipelines.yml
+
+- name: Restart Jenkins Controller to apply changes
+  shell: |
+    nohup /opt/homebrew/opt/openjdk@21/bin/java -jar /opt/homebrew/opt/jenkins-lts/libexec/cli-2.479.3.jar -s {{ jenkins_url }} -auth admin:admin restart
+  become: true
+  become_user: "{{ jenkins_user }}"
   async: 60
   poll: 0
   ignore_errors: true
@@ -25,6 +38,6 @@
     nohup curl -sO {{ jenkins_url }}/jnlpJars/agent.jar; java -jar agent.jar -url {{ jenkins_url }} -secret {{ jenkins_agent_secret }} -name agent1 -webSocket -workDir "{{ jenkins_agent_dir }}" > /tmp/jenkins-agent.log 2>&1 &
   args:
   become: true
-  become_user: moleksiienko
+  become_user: "{{ jenkins_user }}"
   async: 60
   poll: 0

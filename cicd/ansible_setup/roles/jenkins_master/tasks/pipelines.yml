@@ -1,0 +1,20 @@
+---
+- name: Configure Jenkins precommit job
+  ansible.builtin.copy:
+    src:  precommit-config.xml
+    dest: "{{ jenkins_dir }}/jobs/precommit/config.xml"
+
+- name: Configure Jenkins build job
+  ansible.builtin.copy:
+    src:  build-config.xml
+    dest: "{{ jenkins_dir }}/jobs/build/config.xml"
+
+- name: Configure Jenkins promotion job
+  ansible.builtin.copy:
+    src:  promotion-config.xml
+    dest: "{{ jenkins_dir }}/jobs/promotion/config.xml"
+
+- name: Configure Jenkins deploy job
+  ansible.builtin.copy:
+    src:  deploy-config.xml
+    dest: "{{ jenkins_dir }}/jobs/deploy/config.xml"
