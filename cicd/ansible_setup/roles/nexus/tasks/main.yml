@@ -8,11 +8,8 @@
 
 - name: Start Nexus repository
   shell: |
-    nohup {{ nexus_dir }}/nexus-3.43.0-01/bin/nexus run
+     {{ nexus_dir }}/nexus-3.43.0-01/bin/nexus start
   become: true
   async: 60
   poll: 0
   ignore_errors: true
-
-
-
