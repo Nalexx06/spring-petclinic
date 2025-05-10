@@ -1,0 +1,72 @@
+---
+- name: Unarchive Nexus package
+  unarchive:
+    src: "{{ nexus_dir }}/nexus.tar.gz"
+    dest: "/opt"
+    remote_src: yes
+    creates: "{{ nexus_dir }}/nexus-3.43.0-01"
+
+- name: Start Nexus repository
+  shell: |
+     {{ nexus_dir }}/nexus-3.43.0-01/bin/nexus start
+  become: true
+  async: 60
+  poll: 0
+  ignore_errors: true
+
+- name: Create Docker Snapshot Registry
+  uri:
+    url: "http://localhost:8081/service/rest/v1/repositories/docker/hosted"
+    method: POST
+    headers:
+      Authorization: "Basic {{ 'admin:admin' | b64encode }}"
+      Content-Type: "application/json"
+    body: |
+      {
+        "name": "docker-snapshots",
+        "online": true,
+        "storage": {
+          "blobStoreName": "default",
+          "strictContentTypeValidation": true,
+          "writePolicy": "allow"
+        },
+        "docker": {
+          "v1Enabled": false,
+          "forceBasicAuth": true,
+          "httpPort": 5000
+        },
+        "cleanup": {
+          "policyNames": []
+        }
+      }
+    body_format: json
+    status_code: 201
+
+- name: Create Docker Release Registry
+  uri:
+    url: "http://localhost:8081/service/rest/v1/repositories/docker/hosted"
+    method: POST
+    headers:
+      Authorization: "Basic {{ 'admin:admin' | b64encode }}"
+      Content-Type: "application/json"
+    body: |
+      {
+        "name": "docker-releases",
+        "online": true,
+        "storage": {
+          "blobStoreName": "default",
+          "strictContentTypeValidation": true,
+          "writePolicy": "allow_once"
+        },
+        "docker": {
+          "v1Enabled": false,
+          "forceBasicAuth": true,
+          "httpPort": 5001
+        },
+        "cleanup": {
+          "policyNames": []
+        }
+      }
+    body_format: json
+    status_code: 201
+
